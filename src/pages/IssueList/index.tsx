@@ -1,35 +1,57 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import Header from '../../components/Header';
 import styled from '@emotion/styled';
 import ListItem from '../../components/ListItem';
-import { getIssue } from '../../services/Issue';
 import { IIssueList } from '../../components/models/api';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { extraUrl } from '../../components/Common/Utils/extraction';
+import { useNavigate } from 'react-router-dom';
+import Loading from '../../components/Loading';
+import OrgRepoContext from '../../contexts/OrgRepoContext';
+import { getIssues } from '../../services/Issue';
 
 const IssueList = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const observerTargetEl = useRef<HTMLDivElement>(null);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(true);
   const [List, setList] = useState<any>([]); // 수정 필요
-  const orgRepo = extraUrl(location.state.url);
+  const [page, setPage] = useState(1);
+  const { org, repo } = useContext(OrgRepoContext);
 
-  const getIssues = useCallback(async () => {
-    const response = await getIssue(orgRepo);
-    console.log(response);
-    setList(response);
-  }, [orgRepo]);
+  const fetchMoreLists = async () => {
+    setPageLoading(true);
+    const response = await getIssues({ org, repo, page });
+    if (response.status === 200) {
+      setList((prev: any) => [...prev, ...response.data]); // 수정필요
+    }
+    setHasNextPage(response.data.length === 10);
+    if (response.data.length) {
+      setPage(prev => prev + 1);
+    }
+    setPageLoading(false);
+  };
 
   useEffect(() => {
-    if (!location.state.url) return navigate('/');
-    getIssues();
-  }, []);
+    if (!(repo && org)) return navigate('/');
+    if (!observerTargetEl.current || !hasNextPage) return;
+
+    const io = new IntersectionObserver((entries, observer) => {
+      if (entries[0].isIntersecting) {
+        fetchMoreLists();
+      }
+    });
+    io.observe(observerTargetEl.current);
+
+    return () => {
+      io.disconnect();
+    };
+  }, [fetchMoreLists, hasNextPage]);
 
   return (
     <Wrap>
-      <Header org={location.state.org} repo={location.state.orepo} />
+      <Header />
       <IssueListDiv>
-        {List.data &&
-          List.data.map((list: IIssueList) => (
+        {List.length !== 0 &&
+          List.map((list: IIssueList, index: number) => (
             <ListItem
               key={list.id}
               id={list.id}
@@ -38,9 +60,11 @@ const IssueList = () => {
               writer={list.user.login}
               date={list.updated_at}
               comments={list.comments}
+              index={index}
             />
           ))}
-        {!List.data && <span>검색결과를 가져올 수 없습니다</span>}
+        {pageLoading && <Loading />}
+        {!pageLoading && <div ref={observerTargetEl} />}
       </IssueListDiv>
     </Wrap>
   );
@@ -48,11 +72,13 @@ const IssueList = () => {
 
 const Wrap = styled.main`
   width: 80%;
+  height: 100vh;
 `;
 
 const IssueListDiv = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
 `;
 
 export default IssueList;
