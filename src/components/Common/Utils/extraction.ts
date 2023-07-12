@@ -1,5 +1,5 @@
 export const extraUrl = (url: string) => {
-  const regex = /https:\/\/github\.com\/(\w+)\/(\w+)/;
+  const regex = /https:\/\/github\.com\/([^/]+)\/([^/]+)/;
   const match = url.match(regex);
 
   if (match !== null) {
