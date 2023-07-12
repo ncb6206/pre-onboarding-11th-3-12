@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import useInput from '../../hooks/useInput';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { validUrl } from '../../components/Common/Utils/valid';
+import { extraUrl } from '../../components/Common/Utils/extraction';
+import OrgRepoContext from '../../contexts/OrgRepoContext';
 
 const Home = () => {
   const navigate = useNavigate();
   const [gitUrl, onChangeGitUrl] = useInput('');
+  const { setOrg, setRepo } = useContext(OrgRepoContext);
 
   const onSubmitUrl = () => {
-    console.log(gitUrl);
     if (validUrl(gitUrl)) {
-      return navigate('/issuelist', { state: { url: gitUrl } });
+      const { org, repo } = extraUrl(gitUrl);
+      setOrg(org as string);
+      setRepo(repo as string);
+      return navigate('/issuelist');
     } else {
       console.error('url이 잘못 되었습니다.');
     }

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from '@emotion/styled';
-import { IOwnerRepo } from '../models/api';
+import OrgRepoContext from '../../contexts/OrgRepoContext';
 
-const Header = (props: IOwnerRepo) => {
+const Header = () => {
+  const orgRepo = useContext(OrgRepoContext);
   return (
     <HeaderDiv>
-      {props.org} / {props.repo}
+      {orgRepo.org} / {orgRepo.repo}
     </HeaderDiv>
   );
 };
