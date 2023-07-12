@@ -17,6 +17,7 @@ export interface IList {
   writer: string;
   date: string;
   comments: string;
+  index: number;
 }
 
 export interface IHeader {
@@ -24,7 +25,18 @@ export interface IHeader {
   repoName: string;
 }
 
-export interface IOwnerRepo {
-  org?: string;
-  repo?: string;
+export interface IGetIssues {
+  org: string;
+  repo: string;
+  page?: number;
+}
+
+export interface IGetIssue extends IGetIssues {
+  number: string;
+}
+
+export interface IOrgRepo extends IGetIssue {
+  setOrg: (value: string) => void;
+  setRepo: (value: string) => void;
+  setNumber: (value: string) => void;
 }
