@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
 import Header from '../../components/Header';
 import styled from '@emotion/styled';
 import ListItem from '../../components/ListItem';
@@ -17,9 +23,10 @@ const IssueList = () => {
   const [page, setPage] = useState(1);
   const { org, repo } = useContext(OrgRepoContext);
 
-  const fetchMoreLists = async () => {
+  const fetchMoreLists = useCallback(async () => {
     setPageLoading(true);
     const response = await getIssues({ org, repo, page });
+    console.log({ org, repo, page });
     if (response.status === 200) {
       setList((prev: any) => [...prev, ...response.data]); // 수정필요
     }
@@ -28,7 +35,7 @@ const IssueList = () => {
       setPage(prev => prev + 1);
     }
     setPageLoading(false);
-  };
+  }, [org, page, repo]);
 
   useEffect(() => {
     if (!(repo && org)) return navigate('/');
@@ -44,7 +51,7 @@ const IssueList = () => {
     return () => {
       io.disconnect();
     };
-  }, [fetchMoreLists, hasNextPage]);
+  }, [fetchMoreLists, hasNextPage, navigate, org, repo]);
 
   return (
     <Wrap>
