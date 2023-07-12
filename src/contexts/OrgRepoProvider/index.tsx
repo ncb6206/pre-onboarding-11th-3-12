@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import OrgRepoContext from '../OrgRepoContext';
 
 const OrgRepoProvider = ({ children }: { children: ReactNode }) => {
