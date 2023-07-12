@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import Header from '../../components/Header';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
@@ -12,19 +12,19 @@ const IssueDetail = () => {
   const [issue, setIssue] = useState<any>([]); // 수정필요
   const { org, repo, number } = useContext(OrgRepoContext);
 
-  const getItem = async () => {
+  const getItem = useCallback(async () => {
     const response = await getIssue({ org, repo, number });
     // console.log(response, response.data);
     if (response.status === 200) {
       setIssue(response.data);
     }
-  };
+  }, [number, org, repo]);
 
   useEffect(() => {
     if (!(repo && org && number)) return navigate('/');
     getItem();
     // console.log(issue);
-  }, []);
+  }, [getItem, navigate, number, org, repo]);
 
   return (
     <Wrap>
