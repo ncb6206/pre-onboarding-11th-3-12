@@ -6,11 +6,11 @@ import OrgRepoContext from '../../contexts/OrgRepoContext';
 
 const ListItem = (props: IList) => {
   const navigate = useNavigate();
-  const { number, setNumber } = useContext(OrgRepoContext);
+  const { setNumber } = useContext(OrgRepoContext);
 
   const onClickIssue = () => {
     setNumber(props.number);
-    return navigate(`/issuedetail/${number}`);
+    return navigate(`/issuedetail/${props.number}`);
   };
 
   return (
