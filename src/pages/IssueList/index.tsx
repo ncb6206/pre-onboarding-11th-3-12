@@ -30,7 +30,7 @@ const IssueList = () => {
     if (response.status === 200) {
       setList((prev: any) => [...prev, ...response.data]); // 수정필요
     }
-    setHasNextPage(response.data.length === 10);
+    setHasNextPage(response.data.length === 15);
     if (response.data.length) {
       setPage(prev => prev + 1);
     }
