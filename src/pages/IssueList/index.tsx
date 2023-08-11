@@ -26,14 +26,19 @@ const IssueList = () => {
   const fetchMoreLists = useCallback(async () => {
     setPageLoading(true);
     const response = await getIssues({ org, repo, page });
+
     console.log({ org, repo, page });
+
     if (response.status === 200) {
       setList((prev: any) => [...prev, ...response.data]); // 수정필요
     }
+
     setHasNextPage(response.data.length === 15);
+
     if (response.data.length) {
       setPage(prev => prev + 1);
     }
+
     setPageLoading(false);
   }, [org, page, repo]);
 

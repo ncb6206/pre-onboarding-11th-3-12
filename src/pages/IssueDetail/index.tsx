@@ -6,6 +6,8 @@ import OrgRepoContext from '../../contexts/OrgRepoContext';
 import { getIssue } from '../../services/Issue';
 import Loading from '../../components/Loading';
 import dating from '../../components/Common/Utils/dating';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const IssueDetail = () => {
   const navigate = useNavigate();
@@ -45,7 +47,12 @@ const IssueDetail = () => {
               </IssueDetailLeft>
               <IssueDetailComment>코멘트: {issue.comments}</IssueDetailComment>
             </IssueDetailHead>
-            <IssueDetailBody>{issue.body}</IssueDetailBody>
+            <IssueDetailBody>
+              <ReactMarkdown
+                children={issue.body}
+                remarkPlugins={[remarkGfm]}
+              />
+            </IssueDetailBody>
           </>
         )}
         {issue.length === 0 && <Loading />}
