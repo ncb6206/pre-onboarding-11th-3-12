@@ -14,6 +14,7 @@ const Header = () => {
 const HeaderDiv = styled.div`
   padding: 20px 30px;
   margin: 10px;
+  font-size: 2.5rem;
   text-align: center;
   box-shadow: 0 4px 4px -4px black;
   border-radius: 5px;
