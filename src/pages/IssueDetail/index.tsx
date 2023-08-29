@@ -48,10 +48,9 @@ const IssueDetail = () => {
               <IssueDetailComment>코멘트: {issue.comments}</IssueDetailComment>
             </IssueDetailHead>
             <IssueDetailBody>
-              <ReactMarkdown
-                children={issue.body}
-                remarkPlugins={[remarkGfm]}
-              />
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {issue?.body}
+              </ReactMarkdown>
             </IssueDetailBody>
           </>
         )}
@@ -65,8 +64,7 @@ export default IssueDetail;
 
 const Wrap = styled.main`
   width: 80%;
-  height: 100vh;
-  box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.2);
+  min-height: 100vh;
   border-radius: 5px;
   padding: 2rem;
 `;
@@ -92,10 +90,42 @@ const Avatar = styled.img`
   height: 15%;
 `;
 
-const IssueDetailBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  line-height: 1.5;
+const IssueDetailBody = styled.section`
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 40px;
+  border-radius: 0px 40px 40px 40px;
+  border: 0.5px solid #d0d7de;
+  font-weight: 300;
+  word-wrap: break-word;
+
+  h1,
+  h2 {
+    width: 100%;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    border-bottom: 0.5px solid #d0d7de;
+  }
+
+  p,
+  li {
+    margin: 20px 0;
+    line-height: 1.2;
+  }
+
+  code {
+    white-space: break-spaces;
+    width: 100%;
+    background-color: #eee;
+    border-radius: 3px;
+    padding: 0 3px;
+  }
+
+  img {
+    margin: 20px 0;
+    width: 100%;
+    max-width: 600px;
+  }
 `;
 
 const IssueDetailLeft = styled.div`
