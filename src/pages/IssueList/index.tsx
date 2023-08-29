@@ -19,7 +19,7 @@ const IssueList = () => {
   const observerTargetEl = useRef<HTMLDivElement>(null);
   const [pageLoading, setPageLoading] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const [List, setList] = useState<any>([]); // 수정 필요
+  const [List, setList] = useState<any>([]);
   const [page, setPage] = useState(1);
   const { org, repo } = useContext(OrgRepoContext);
 
