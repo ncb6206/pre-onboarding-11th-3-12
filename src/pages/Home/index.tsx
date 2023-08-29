@@ -8,7 +8,9 @@ import OrgRepoContext from '../../contexts/OrgRepoContext';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [gitUrl, onChangeGitUrl] = useInput('');
+  const [gitUrl, onChangeGitUrl] = useInput(
+    'https://github.com/vercel/next.js/issues',
+  );
   const { setOrg, setRepo } = useContext(OrgRepoContext);
 
   const onSubmitUrl = () => {
@@ -17,23 +19,23 @@ const Home = () => {
       setOrg(org as string);
       setRepo(repo as string);
       return navigate('/issuelist');
-    } else {
-      console.error('url이 잘못 되었습니다.');
     }
+
+    console.error('url이 잘못 되었습니다.');
   };
 
   return (
     <Wrap>
-      <span>Github URL을 입력해주세요</span>
+      <Title>Github URL을 입력해주세요</Title>
       <InputDiv>
-        <input
+        <Input
           type="text"
           id="git-input"
           placeholder="https://github.com"
           value={gitUrl}
           onChange={onChangeGitUrl}
         />
-        <button onClick={onSubmitUrl}>입력</button>
+        <Button onClick={onSubmitUrl}>입력</Button>
       </InputDiv>
     </Wrap>
   );
@@ -45,10 +47,56 @@ const Wrap = styled.main`
   gap: 1rem;
 `;
 
+const Title = styled.h1`
+  font-family: 'Jua', sans-serif;
+  font-size: 5rem;
+  color: #5ebec4;
+`;
+
 const InputDiv = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 1rem;
+`;
+
+const Input = styled.input`
+  display: block;
+  width: 100%;
+  border: 3px solid;
+  padding: 0.5rem;
+  font-family: 'Jua', sans-serif;
+  font-size: 2rem;
+  height: 4rem;
+`;
+
+const Button = styled.button`
+  display: block;
+  position: relative;
+  float: left;
+  width: 10rem;
+  height: 90%;
+  padding: 0;
+  margin: 10px 20px 10px 0;
+  font-weight: 600;
+  text-align: center;
+  line-height: 3rem;
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 5px 0px 0px #1e8185;
+  transition: all 0.2s;
+  background: #5dc8cd;
+  font-family: 'Jua', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 0.1em;
+  border: none;
+
+  :hover {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    box-shadow: 0px 0px 0px 0px #1e8185;
+    cursor: pointer;
+  }
 `;
 
 export default Home;
