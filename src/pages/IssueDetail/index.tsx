@@ -1,60 +1,64 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import Header from '../../components/Header';
 import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
-import OrgRepoContext from '../../contexts/OrgRepoContext';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getIssue } from '../../services/Issue';
 import Loading from '../../components/Loading';
 import dating from '../../components/Common/Utils/dating';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { IHeader } from '../../components/models/api';
+import { useQuery } from '@tanstack/react-query';
 
 const IssueDetail = () => {
   const navigate = useNavigate();
-  const [issue, setIssue] = useState<any>([]); // 수정필요
-  const { org, repo, number } = useContext(OrgRepoContext);
-
-  const getItem = useCallback(async () => {
-    const response = await getIssue({ org, repo, number });
-    // console.log(response, response.data);
-    if (response.status === 200) {
-      setIssue(response.data);
-    }
-  }, [number, org, repo]);
+  const { org, repo }: IHeader = JSON.parse(
+    String(localStorage.getItem('orgRepo')),
+  );
+  const { issueId } = useParams();
 
   useEffect(() => {
-    if (!(repo && org && number)) return navigate('/');
-    getItem();
-    // console.log(issue);
-  }, [getItem, navigate, number, org, repo]);
+    if (!(repo && org && issueId)) return navigate('/');
+  }, [issueId, navigate, org, repo]);
+
+  const getItem = useCallback(async () => {
+    return await getIssue({ org, repo, issueId });
+  }, [issueId, org, repo]);
+
+  const { isLoading, isFetching, data } = useQuery({
+    queryKey: ['issue'],
+    queryFn: getItem,
+  });
 
   return (
     <Wrap>
       <Header />
       <IssueDetailDiv>
-        {issue.length !== 0 && (
+        {!(isLoading || isFetching) && (
           <>
             <IssueDetailHead>
-              <Avatar src={issue.user.avatar_url} alt="avatar" />
+              <Avatar src={data.data.user.avatar_url} alt="avatar" />
               <IssueDetailLeft>
                 <IssueDetailTitle>
-                  {issue.number} {issue.title}
+                  {data.data.number} {data.data.title}
                 </IssueDetailTitle>
                 <IssueDetailWrite>
-                  <span>작성자: {issue.user.login}</span>
-                  <span>작성일: {dating(issue.updated_at)}</span>
+                  <span>작성자: {data.data.user.login}</span>
+                  <span>작성일: {dating(data.data.updated_at)}</span>
                 </IssueDetailWrite>
               </IssueDetailLeft>
-              <IssueDetailComment>코멘트: {issue.comments}</IssueDetailComment>
+              <IssueDetailComment>
+                코멘트: {data.data.comments}
+              </IssueDetailComment>
             </IssueDetailHead>
             <IssueDetailBody>
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {issue?.body}
+                {data.data?.body}
               </ReactMarkdown>
             </IssueDetailBody>
           </>
         )}
-        {issue.length === 0 && <Loading />}
+        {(isLoading || isFetching) && <Loading />}
       </IssueDetailDiv>
     </Wrap>
   );

@@ -1,82 +1,78 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useRef,
-  useCallback,
-} from 'react';
+import React, { useEffect, useCallback } from 'react';
 import Header from '../../components/Header';
 import styled from '@emotion/styled';
 import ListItem from '../../components/ListItem';
-import { IIssueList } from '../../components/models/api';
+import { IHeader, IIssueList } from '../../components/models/api';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/Loading';
-import OrgRepoContext from '../../contexts/OrgRepoContext';
 import { getIssues } from '../../services/Issue';
+import { useInView } from 'react-intersection-observer';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import _ from 'lodash';
 
 const IssueList = () => {
   const navigate = useNavigate();
-  const observerTargetEl = useRef<HTMLDivElement>(null);
-  const [pageLoading, setPageLoading] = useState(false);
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [List, setList] = useState<any>([]);
-  const [page, setPage] = useState(1);
-  const { org, repo } = useContext(OrgRepoContext);
+  const { org, repo }: IHeader = JSON.parse(
+    String(localStorage.getItem('orgRepo')),
+  );
+  const { ref, inView } = useInView({ threshold: 0.5 });
 
-  const fetchMoreLists = useCallback(async () => {
-    setPageLoading(true);
-    const response = await getIssues({ org, repo, page });
+  const fetchIssueList = useCallback(
+    async ({ pageParam = 0 }) => {
+      return await getIssues({ org, repo, page: pageParam });
+    },
+    [org, repo],
+  );
 
-    console.log({ org, repo, page });
+  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ['issueList'],
+      queryFn: fetchIssueList,
+      getNextPageParam: (lastPage, allPages) => {
+        return lastPage.data.length !== 0 ? allPages.length + 1 : undefined;
+      },
+    });
 
-    if (response.status === 200) {
-      setList((prev: any) => [...prev, ...response.data]); // 수정필요
-    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const throttledFetchNextPage = useCallback(_.throttle(fetchNextPage, 1000), [
+    fetchNextPage,
+  ]);
 
-    setHasNextPage(response.data.length === 15);
-
-    if (response.data.length) {
-      setPage(prev => prev + 1);
-    }
-
-    setPageLoading(false);
-  }, [org, page, repo]);
+  if (hasNextPage && inView && !isFetchingNextPage && !isFetching) {
+    throttledFetchNextPage();
+  }
 
   useEffect(() => {
     if (!(repo && org)) return navigate('/');
-    if (!observerTargetEl.current || !hasNextPage) return;
-
-    const io = new IntersectionObserver((entries, observer) => {
-      if (entries[0].isIntersecting) {
-        fetchMoreLists();
-      }
-    });
-    io.observe(observerTargetEl.current);
-
-    return () => {
-      io.disconnect();
-    };
-  }, [fetchMoreLists, hasNextPage, navigate, org, repo]);
+  }, [navigate, org, repo]);
 
   return (
     <Wrap>
       <Header />
       <IssueListDiv>
-        {List.length !== 0 &&
-          List.map((list: IIssueList, index: number) => (
-            <ListItem
-              key={list.id}
-              id={list.id}
-              number={list.number}
-              title={list.title}
-              writer={list.user.login}
-              date={list.updated_at}
-              comments={list.comments}
-              index={index}
-            />
+        {data?.pages &&
+          data?.pages.map((group, i: number) => (
+            <React.Fragment key={i}>
+              {group.data.map((list: IIssueList, index: number) => (
+                <ListItem
+                  key={list.id}
+                  id={list.id}
+                  number={list.number}
+                  title={list.title}
+                  writer={list.user.login}
+                  date={list.updated_at}
+                  comments={list.comments}
+                  index={index}
+                />
+              ))}
+            </React.Fragment>
           ))}
-        {pageLoading && <Loading />}
-        {!pageLoading && <div ref={observerTargetEl} />}
+
+        {isFetchingNextPage || isFetching ? (
+          <Loading />
+        ) : (
+          <div style={{ height: '50px' }} ref={ref}></div>
+        )}
       </IssueListDiv>
     </Wrap>
   );
