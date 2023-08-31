@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import useInput from '../../hooks/useInput';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import { validUrl } from '../../components/Common/Utils/valid';
 import { extraUrl } from '../../components/Common/Utils/extraction';
-import OrgRepoContext from '../../contexts/OrgRepoContext';
 
 const Home = () => {
   const navigate = useNavigate();
