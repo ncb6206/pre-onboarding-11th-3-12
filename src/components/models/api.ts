@@ -21,8 +21,8 @@ export interface IList {
 }
 
 export interface IHeader {
-  orgName: string;
-  repoName: string;
+  org: string;
+  repo: string;
 }
 
 export interface IGetIssues {
@@ -32,11 +32,10 @@ export interface IGetIssues {
 }
 
 export interface IGetIssue extends IGetIssues {
-  number: string;
+  issueId?: string;
 }
 
 export interface IOrgRepo extends IGetIssue {
   setOrg: (value: string) => void;
   setRepo: (value: string) => void;
-  setNumber: (value: string) => void;
 }
