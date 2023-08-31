@@ -4,7 +4,7 @@ import instance from './config';
 export const getIssues = async ({ org, repo, page }: IGetIssues) => {
   try {
     const res = await instance.get(
-      `/${org}/${repo}/issues?state=open&sort=comments&page=${page}&per_page=15`,
+      `/${org}/${repo}/issues?state=open&sort=comments&per_page=15&page=${page}`,
     );
     return res;
   } catch (error: any) {
@@ -13,9 +13,9 @@ export const getIssues = async ({ org, repo, page }: IGetIssues) => {
   }
 };
 
-export const getIssue = async ({ org, repo, number }: IGetIssue) => {
+export const getIssue = async ({ org, repo, issueId }: IGetIssue) => {
   try {
-    const res = await instance.get(`/${org}/${repo}/issues/${number}`);
+    const res = await instance.get(`/${org}/${repo}/issues/${issueId}`);
     return res;
   } catch (error: any) {
     console.error(error);
