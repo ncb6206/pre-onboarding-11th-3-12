@@ -1,12 +1,21 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
-import OrgRepoContext from '../../contexts/OrgRepoContext';
+import { IHeader } from '../models/api';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
-  const orgRepo = useContext(OrgRepoContext);
+  const navigate = useNavigate();
+  const { org, repo }: IHeader = JSON.parse(
+    String(localStorage.getItem('orgRepo')),
+  );
+
+  const onClickHome = () => {
+    return navigate('/');
+  };
+
   return (
-    <HeaderDiv>
-      {orgRepo.org} / {orgRepo.repo}
+    <HeaderDiv onClick={onClickHome}>
+      {org} / {repo}
     </HeaderDiv>
   );
 };
@@ -18,6 +27,7 @@ const HeaderDiv = styled.div`
   text-align: center;
   box-shadow: 0 4px 4px -4px black;
   border-radius: 5px;
+  cursor: pointer;
 `;
 
 export default Header;

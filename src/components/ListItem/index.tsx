@@ -1,15 +1,11 @@
 import styled from '@emotion/styled';
 import { IList } from '../models/api';
 import { Link, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
-import OrgRepoContext from '../../contexts/OrgRepoContext';
 
 const ListItem = (props: IList) => {
   const navigate = useNavigate();
-  const { setNumber } = useContext(OrgRepoContext);
 
   const onClickIssue = () => {
-    setNumber(props.number);
     return navigate(`/issuedetail/${props.number}`);
   };
 

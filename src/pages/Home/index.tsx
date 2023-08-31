@@ -11,13 +11,18 @@ const Home = () => {
   const [gitUrl, onChangeGitUrl] = useInput(
     'https://github.com/vercel/next.js/issues',
   );
-  const { setOrg, setRepo } = useContext(OrgRepoContext);
+  // const { setOrg, setRepo } = useContext(OrgRepoContext);
 
   const onSubmitUrl = () => {
     if (validUrl(gitUrl)) {
       const { org, repo } = extraUrl(gitUrl);
-      setOrg(org as string);
-      setRepo(repo as string);
+      const orgRepo = { org: org, repo: repo };
+
+      if (localStorage.getItem('orgRepo')) {
+        localStorage.removeItem('orgRepo');
+      }
+
+      localStorage.setItem('orgRepo', JSON.stringify(orgRepo));
       return navigate('/issuelist');
     }
 
