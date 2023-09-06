@@ -113,3 +113,8 @@ Remove : 파일을 삭제하는 작업만 수행한 경우
 !HOTFIX : 급하게 치명적인 버그를 고쳐야하는 경우
 !BREAKING CHANGE : CHANGE 커다란 API 변경의 경우
 ```
+
+## ETC
+
+같은 주제로 프론트엔드 개발자 6명이서 협업을 진행하였습니다.
+- [**`팀깃허브 링크`**](https://github.com/wanted-pre-onboarding-team12/pre-onboarding-11th-3-12)
